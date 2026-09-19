@@ -1,0 +1,92 @@
+#include <stdio.h> //добавляем библиотеку для ввода вывода
+#include <stdbool.h> //эта для булевых функций
+#include <windows.h> //эта для нормальной интерпритации русского языка, а не кракозябры
+
+int findvar(char *formula, char *var)
+{
+    int count=0;
+
+    for (int i =0; formula[i] != '\0'; i++)
+    {
+        char c = formula[i];
+
+        if (c >= 'a' && c<= 'z')
+        {
+            c = c-'a'+'A';
+        }
+        if (c >= 'A' && c<= 'Z')
+        {
+            int exist = 0;
+            for (int j=0; j <count; j++)
+            {
+                if (var[j]==c)
+                {
+                    exist = 1;
+                    break;
+                }
+            }
+
+            if (!exist)
+            {
+                var[count] = c;
+                count++;
+            }
+        }
+
+    }
+    return count;
+}
+
+
+
+
+
+int main(int argc, char *argv[])
+{
+    SetConsoleOutputCP(CP_UTF8); //тут тоже чтото для исправления крокозябр
+    
+    if (argc<2)
+    {
+        printf("Укажите имя файла!!!!\n");
+        return 1;
+    }
+
+    FILE *file = fopen(argv[1], "r"); //открываем файл и читаем его с помощью "r"
+
+
+    if (file == NULL) //если файл пустой, нулл=пустота
+    {
+        printf("Файл не найден!!!!\n");
+        return 1;
+    }
+
+
+    char formula[1000]; //создали массив куда кладем формулу
+    
+    if (fgets(formula, 1000, file) != NULL)
+    {
+        printf("Формула:%s\n", formula);
+        char var[26]; //возьмем массив из 26 символов тк в лат алфавите 26 букв
+        
+        int varcount = findvar(formula, var);
+
+        printf("переменные:");
+
+        for (int i =0; i<varcount; i++)
+        {
+            printf("%c ", var[i]);
+        }
+        printf("\n");
+    }
+    else
+    {
+        printf("Файл пустой((\n");
+    }
+    fclose(file);
+
+    return 0;
+}
+
+//cd ".\лаба 1" 
+//gcc main.c -o main.exe
+//.\main.exe formula.txt
