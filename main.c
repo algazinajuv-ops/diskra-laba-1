@@ -1,41 +1,41 @@
 #include <stdio.h> //добавляем библиотеку для ввода вывода
 #include <stdbool.h> //эта для булевых функций
 #include <windows.h> //эта для нормальной интерпритации русского языка, а не кракозябры
+#include <ctype.h>
 
-int findvar(char *formula, char *var)
-{
-    int count=0;
 
-    for (int i =0; formula[i] != '\0'; i++)
-    {
-        char c = formula[i];
-
-        if (c >= 'a' && c<= 'z')
-        {
-            c = c-'a'+'A';
+int findvar(const char *formula, char var[]){
+    int count = 0;
+    for (int i =0; formula[i]!= '\0'; i++){
+        char x = formula[i];
+        if (x >= 'a' && x<= 'z'){
+            x = x- 'a' + 'A';
         }
-        if (c >= 'A' && c<= 'Z')
-        {
-            int exist = 0;
-            for (int j=0; j <count; j++)
+
+        if (x>= 'A' && x<= 'Z'){
+            bool found = false;
+
+            for (int j = 0; j< count; j++)
             {
-                if (var[j]==c)
+                if (var[j] == x)
                 {
-                    exist = 1;
+                    found = true;
                     break;
                 }
             }
-
-            if (!exist)
+            if (found == false)
             {
-                var[count] = c;
+                var[count] =x; //записываем х в массив переменных
                 count++;
             }
+            
         }
-
     }
+
     return count;
+
 }
+
 
 
 
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     
     if (argc<2)
     {
-        printf("Укажите имя файла!!!!\n");
+        printf("Укажите имя файла!\n");
         return 1;
     }
 
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 
     if (file == NULL) //если файл пустой, нулл=пустота
     {
-        printf("Файл не найден!!!!\n");
+        printf("Файл не найден\n");
         return 1;
     }
 
@@ -70,13 +70,25 @@ int main(int argc, char *argv[])
         
         int varcount = findvar(formula, var);
 
-        printf("переменные:");
 
         for (int i =0; i<varcount; i++)
         {
             printf("%c ", var[i]);
+            
         }
         printf("\n");
+            int rows = 1 << varcount; // степени двойки для нахождения кол-ва переменных
+        for (int i=0; i< rows; i++)
+        {
+            for (int j = 0; j < varcount; j++)
+            {
+                int bit = varcount-1-j; // получаем значения битов слева направо
+                int value = (i>>bit)&1;
+                printf("%d ", value);
+
+            }
+            printf("\n");
+        }
     }
     else
     {
@@ -87,6 +99,20 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+
+
 //cd ".\лаба 1" 
 //gcc main.c -o main.exe
 //.\main.exe formula.txt
+
+/*
+!    НЕ
+*    И
+^    XOR
++    ИЛИ
+=    эквивалентность
+>    импликация
+<    коимпликация
+%    стрелка Пирса
+|    штрих Шеффера
+*/
